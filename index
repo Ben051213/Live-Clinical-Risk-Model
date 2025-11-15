@@ -9,7 +9,7 @@
     
     <!-- 
       This is the main JavaScript 'brain' of your application.
-      We put it in the <head> to ensure the function is defined
+      It's in the <head> to ensure the function is defined
       BEFORE the <body> of the page tries to use it.
     -->
     <script>
@@ -22,7 +22,7 @@
                     systolic_bp: 120,
                     heart_rate: 70,
                     temp: 36.6,
-                    o2_scale: 1, 
+                    o2_scale: 1, // NEW: Added O2_Scale for the new model
                     on_oxygen: 0, 
                     consciousness: 0, // 'A' (Alert) is 0
                 },
@@ -36,59 +36,102 @@
                 // 3. The "Model" Logic (Transpiled from Python)
                 calculateRisk() {
                     
-                    // --- THIS IS THE REAL, PYTHON-TRAINED DECISION TREE ---
-                    // It has been translated from sklearn's 'export_text' output
-                    // into JavaScript if/else logic.
+                    // --- THIS IS THE NEW, UPGRADED PYTHON-TRAINED DECISION TREE ---
+                    // It has been translated from the rules you provided.
                     
                     const v = this.vitals;
                     let prediction = 'Normal'; // Default prediction
 
-                    if (v.o2_sat <= 91.5) {
-                        if (v.resp_rate <= 24.5) {
-                            if (v.heart_rate <= 110.5) {
-                                prediction = 'Medium';
-                            } else { // v.heart_rate > 110.5
-                                prediction = 'High';
+                    if (v.resp_rate <= 24.5) {
+                        if (v.temp <= 37.55) {
+                            if (v.heart_rate <= 82.5) {
+                                if (v.o2_sat <= 95.5) {
+                                    prediction = 'Low';
+                                } else { // v.o2_sat > 95.5
+                                    if (v.systolic_bp <= 110.0) {
+                                        prediction = 'Low';
+                                    } else { // v.systolic_bp > 110.0
+                                        prediction = 'Normal';
+                                    }
+                                }
+                            } else { // v.heart_rate > 82.5
+                                if (v.o2_sat <= 92.5) {
+                                    if (v.systolic_bp <= 121.0) {
+                                        prediction = 'Medium';
+                                    } else { // v.systolic_bp > 121.0
+                                        prediction = 'Low';
+                                    }
+                                } else { // v.o2_sat > 92.5
+                                    if (v.resp_rate <= 22.5) {
+                                        prediction = 'Low';
+                                    } else { // v.resp_rate > 22.5
+                                        prediction = 'Low';
+                                    }
+                                }
                             }
-                        } else { // v.resp_rate > 24.5
-                            if (v.systolic_bp <= 85.0) {
-                                prediction = 'High';
-                            } else { // v.systolic_bp > 85.0
-                                if (v.temp <= 39.5) {
-                                    prediction = 'High';
-                                } else { // v.temp > 39.5
-                                    prediction = 'High';
+                        } else { // v.temp > 37.55
+                            if (v.systolic_bp <= 90.5) {
+                                if (v.resp_rate <= 19.5) {
+                                    if (v.temp <= 39.35) {
+                                        prediction = 'Medium';
+                                    } else { // v.temp > 39.35
+                                        prediction = 'High';
+                                    }
+                                } else { // v.resp_rate > 19.5
+                                    if (v.resp_rate <= 20.5) {
+                                        prediction = 'High';
+                                    } else { // v.resp_rate > 20.5
+                                        prediction = 'High';
+                                    }
+                                }
+                            } else { // v.systolic_bp > 90.5
+                                if (v.o2_sat <= 93.5) {
+                                    if (v.o2_sat <= 87.0) {
+                                        prediction = 'High';
+                                    } else { // v.o2_sat > 87.0
+                                        prediction = 'Medium';
+                                    }
+                                } else { // v.o2_sat > 93.5
+                                    if (v.systolic_bp <= 109.5) {
+                                        prediction = 'Medium';
+                                    } else { // v.systolic_bp > 109.5
+                                        prediction = 'Low';
+                                    }
                                 }
                             }
                         }
-                    } else { // v.o2_sat > 91.5
-                        if (v.resp_rate <= 11.5) {
-                            prediction = 'Normal'; 
-                        } else { // v.resp_rate > 11.5
+                    } else { // v.resp_rate > 24.5
+                        if (v.systolic_bp <= 103.5) {
                             if (v.systolic_bp <= 101.5) {
-                                if (v.consciousness <= 0.5) { // consciousness == 0 ('A')
-                                    if (v.heart_rate <= 104.5) {
-                                        prediction = 'Medium';
-                                    } else { // v.heart_rate > 104.5
+                                if (v.o2_sat <= 95.5) {
+                                    prediction = 'High';
+                                } else { // v.o2_sat > 95.5
+                                    if (v.temp <= 37.95) {
+                                        prediction = 'High';
+                                    } else { // v.temp > 37.95
                                         prediction = 'High';
                                     }
-                                } else { // consciousness > 0.5 ('P', 'U', 'V')
-                                    prediction = 'High';
                                 }
                             } else { // v.systolic_bp > 101.5
-                                if (v.resp_rate <= 20.5) {
-                                    if (v.temp <= 37.7) {
-                                        prediction = 'Low';
-                                    } else { // v.temp > 37.7
-                                        prediction = 'Medium';
-                                    }
-                                } else { // v.resp_rate > 20.5
-                                    if (v.temp <= 38.3) {
-                                        prediction = 'Low';
-                                    } else { // v.temp > 38.3
-                                        prediction = 'Medium';
-                                    }
+                                if (v.heart_rate <= 96.5) {
+                                    prediction = 'Medium';
+                                } else { // v.heart_rate > 96.5
+                                    prediction = 'High';
                                 }
+                            }
+                        } else { // v.systolic_bp > 103.5
+                            if (v.heart_rate <= 114.0) {
+                                if (v.o2_sat <= 90.0) {
+                                    if (v.o2_scale <= 1.5) {
+                                        prediction = 'High';
+                                    } else { // v.o2_scale > 1.5
+                                        prediction = 'High';
+                                    }
+                                } else { // v.o2_sat > 90.0
+                                    prediction = 'Medium';
+                                }
+                            } else { // v.heart_rate > 114.0
+                                prediction = 'High';
                             }
                         }
                     }
@@ -204,7 +247,7 @@
                 <div>
                     <div class="flex justify-between items-center mb-2">
                         <label for="o2_sat_slider" class="font-medium text-gray-300">Oxygen Saturation (SpO₂)</label>
-                        <!-- NEW: Input box + unit -->
+                        <!-- Input box + unit -->
                         <div class="flex items-center space-x-2">
                             <input 
                                 type="number" 
@@ -232,7 +275,7 @@
                 <div>
                     <div class="flex justify-between items-center mb-2">
                         <label for="resp_rate_slider" class="font-medium text-gray-300">Respiratory Rate</label>
-                        <!-- NEW: Input box + unit -->
+                        <!-- Input box + unit -->
                         <div class="flex items-center space-x-2">
                             <input 
                                 type="number" 
@@ -260,7 +303,7 @@
                 <div>
                     <div class="flex justify-between items-center mb-2">
                         <label for="systolic_bp_slider" class="font-medium text-gray-300">Systolic BP</label>
-                        <!-- NEW: Input box + unit -->
+                        <!-- Input box + unit -->
                         <div class="flex items-center space-x-2">
                             <input 
                                 type="number" 
@@ -288,7 +331,7 @@
                 <div>
                     <div class="flex justify-between items-center mb-2">
                         <label for="heart_rate_slider" class="font-medium text-gray-300">Heart Rate</label>
-                        <!-- NEW: Input box + unit -->
+                        <!-- Input box + unit -->
                         <div class="flex items-center space-x-2">
                             <input 
                                 type="number" 
@@ -316,7 +359,7 @@
                 <div>
                     <div class="flex justify-between items-center mb-2">
                         <label for="temp_slider" class="font-medium text-gray-300">Temperature</label>
-                        <!-- NEW: Input box + unit -->
+                        <!-- Input box + unit -->
                         <div class="flex items-center space-x-2">
                             <input 
                                 type="number" 
@@ -342,7 +385,37 @@
                     >
                 </div>
                 
-                <!-- 6. Consciousness -->
+                <!-- NEW: 6. O2 Scale -->
+                <div>
+                    <div class="flex justify-between items-center mb-2">
+                        <label for="o2_scale_slider" class="font-medium text-gray-300">O2 Scale</label>
+                        <!-- Input box + unit -->
+                        <div class="flex items-center space-x-2">
+                            <input 
+                                type="number" 
+                                min="1" 
+                                max="5" 
+                                step="1" 
+                                x-model.number="vitals.o2_scale" 
+                                @input="calculateRisk()"
+                                class="w-20 bg-gray-700 text-white font-bold text-lg rounded-lg border border-gray-600 p-1 text-center"
+                            >
+                            <span class="text-lg text-gray-400">Level</span>
+                        </div>
+                    </div>
+                    <input 
+                        id="o2_scale_slider" 
+                        type="range" 
+                        min="1" 
+                        max="5" 
+                        step="1" 
+                        x-model.number="vitals.o2_scale" 
+                        @input="calculateRisk()" 
+                        class="w-full"
+                    >
+                </div>
+                
+                <!-- 7. Consciousness -->
                 <div @change="calculateRisk()">
                     <label class="font-medium text-gray-300 block mb-2">Consciousness</label>
                     <div class="grid grid-cols-4 gap-2">
